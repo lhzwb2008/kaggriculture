@@ -1,0 +1,2 @@
+kaggle>=1.6.0
+kaggle-environments>=1.14.0

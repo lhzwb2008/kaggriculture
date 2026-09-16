@@ -1,0 +1,13 @@
+---
+description: Report Kaggriculture results as Kaggle skill rating and rank
+alwaysApply: true
+---
+
+# 分数怎么报
+
+对用户说成绩时，默认报 **Kaggle 公开榜 skill rating 和名次**，不要套用 ARC 的 `100 * points / 120`。
+
+- 这是对战模拟赛：赢加分、输减分，金币差不影响 rating。
+- 写法：`rating 1234（约第 500 名）`；有对局数 / 胜负就一起报。
+- 每天最多 5 次提交；只有最近 2 份参与匹配和最终榜。
+- 最终名次看赛后 Bradley-Terry，不是单场金币。

@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+.DS_Store
+.ipynb_checkpoints/
+.env
+kaggle.json
+credentials.json
+data/kaggle/
+demo/output/
+runs/
+replays/
+logs/
+*.egg-info/
+.pytest_cache/
+replay.json
+submission.tar.gz
