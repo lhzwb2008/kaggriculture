@@ -1,0 +1,18 @@
+{
+  "id": "wenbozhang2026/kaggriculture-c95-agent",
+  "title": "Kaggriculture C95 public artifact",
+  "code_file": "submit.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "kaggriculture"
+  ],
+  "model_sources": []
+}
