@@ -1,0 +1,32 @@
+{
+  "kind": "mmpq_multi_entry_v1",
+  "default": 0,
+  "stages": [
+    {
+      "step": 144,
+      "tree": {
+        "feature": 23,
+        "threshold": 0.5,
+        "left": {
+          "choice": 0
+        },
+        "right": {
+          "choice": 1
+        }
+      }
+    },
+    {
+      "step": 648,
+      "tree": {
+        "feature": 71,
+        "threshold": 9888.0,
+        "left": {
+          "choice": 2
+        },
+        "right": {
+          "choice": 3
+        }
+      }
+    }
+  ]
+}

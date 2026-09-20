@@ -1,57 +1,61 @@
 #!/usr/bin/env python3
-"""Submit the agent via Kaggle CLI. Whole pipeline stays on CLI, not the web editor."""
+"""Submit the agent via Kaggle CLI. Auth is token/file based, never a browser login."""
 
 from __future__ import annotations
 
 import argparse
-import os
-import shutil
 import subprocess
 import sys
+import tarfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from tape_lib import kaggle_cmd, prepare_kaggle_auth  # noqa: E402
+
 COMP = "kaggriculture"
+BUNDLE = ("main.py", "observation.py", "model.json", "actions.json")
 
 
-def find_kaggle(explicit: str = "") -> str:
-    candidates = []
-    if explicit:
-        candidates.append(explicit)
-    env = os.environ.get("KAGGLE")
-    if env:
-        candidates.append(env)
-    which = shutil.which("kaggle")
-    if which:
-        candidates.append(which)
-    venv = ROOT / ".venv" / "bin" / "kaggle"
-    if venv.is_file():
-        candidates.append(str(venv))
-    for c in candidates:
-        if c and Path(c).is_file() and os.access(c, os.X_OK):
-            return c
-    raise SystemExit("FAIL: kaggle CLI not found (pip install kaggle && kaggle auth login)")
+def pack_bundle(root: Path = ROOT) -> Path:
+    missing = [name for name in BUNDLE if not (root / name).is_file()]
+    if missing:
+        raise SystemExit(f"FAIL: missing {missing}")
+    dest = root / "submission.tar.gz"
+    with tarfile.open(dest, "w:gz") as tar:
+        for name in BUNDLE:
+            tar.add(root / name, arcname=name)
+    return dest
 
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("-m", "--message", default="wheat loop baseline")
-    p.add_argument("-f", "--file", type=Path, default=ROOT / "main.py")
+    p.add_argument("-m", "--message", default="shop-router-0908 public mosaic")
+    p.add_argument("-f", "--file", type=Path, default=None)
     p.add_argument("--kaggle", default="")
     p.add_argument("--status", action="store_true", help="list recent submissions")
     p.add_argument("--leaderboard", action="store_true")
+    p.add_argument("--pack-only", action="store_true", help="write submission.tar.gz and stop")
     args = p.parse_args()
-    kaggle = find_kaggle(args.kaggle)
+
+    if args.pack_only:
+        dest = pack_bundle(ROOT)
+        print(f"wrote {dest} ({dest.stat().st_size} bytes)")
+        return 0
+
+    prepare_kaggle_auth(ROOT)
+    kaggle = kaggle_cmd(args.kaggle)
 
     if args.leaderboard:
-        return subprocess.call([kaggle, "competitions", "leaderboard", COMP, "-s"])
+        return subprocess.call([*kaggle, "competitions", "leaderboard", COMP, "-s"])
     if args.status:
-        return subprocess.call([kaggle, "competitions", "submissions", COMP])
+        return subprocess.call([*kaggle, "competitions", "submissions", COMP])
 
-    path = args.file.resolve()
+    path = args.file.resolve() if args.file else pack_bundle(ROOT)
     if not path.exists():
         raise SystemExit(f"FAIL: {path} missing")
-    cmd = [kaggle, "competitions", "submit", COMP, "-f", str(path), "-m", args.message]
+    cmd = [*kaggle, "competitions", "submit", COMP, "-f", str(path), "-m", args.message]
     print(" ".join(cmd))
     return subprocess.call(cmd)
 

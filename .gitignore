@@ -10,6 +10,8 @@ data/kaggle/
 demo/output/
 runs/
 replays/
+tapes/*.json
+data/episodes/
 logs/
 *.egg-info/
 .pytest_cache/
